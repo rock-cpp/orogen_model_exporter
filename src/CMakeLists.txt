@@ -1,0 +1,24 @@
+find_package( Boost COMPONENTS system filesystem)
+rock_library(modelLib
+    SOURCES 
+        Argument.cpp
+        Task.cpp
+        Port.cpp
+        Property.cpp
+        TypedObject.cpp
+        Operation.cpp
+        DocumentedObject.cpp
+        YAMLImporter.cpp
+    HEADERS 
+        Task.hpp
+        Port.hpp
+        Property.hpp
+        YAMLImporter.hpp
+    DEPS_PKGCONFIG
+        yaml-cpp
+    DEPS_PLAIN 
+        Boost_SYSTEM Boost_FILESYSTEM
+    )
+    
+rock_executable(ymlTest Main.cpp
+    DEPS modelLib)

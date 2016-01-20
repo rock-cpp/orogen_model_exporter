@@ -1,0 +1,13 @@
+<package>
+  <description brief="Orogen Plugin that allows the generation of C++ Task Proxies">
+  
+  </description>
+  <author>Janosch Machowinski/Janosch.Machowinski@dfki.de</author>
+  <license></license>
+  <url>http://</url>
+  <logo>http://</logo>
+
+  <depend package="orogen" />
+  <depend package="tools/orocos_cpp_base" />
+  <depend package="external/yaml-cpp03" />
+</package>
