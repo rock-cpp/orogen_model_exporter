@@ -70,15 +70,23 @@ class ModelExporterPlugin <  OroGen::Spec::TaskModelExtension
             operations << opHash
         end
         taskHash['operations'] = operations
+
+        transformer = task.find_extension("transformer");
+        if(transformer)
+            taskHash['Plugins'] = {'transformer' => {'Frames' => transformer.available_frames.to_a,
+                                   'Transformations' => transformer.needed_transformations.map{|t| {"From" => t.from, "To" => t.to} } }}
+        end 
         
 
         doc[moduleName][taskName] = taskHash
         
         modelYML = Psych.dump(doc);
                 
+        # FIXME needs to be save in .orogen/models
         Orocos::Generation.save_generated(true, 'models', "#{moduleName}::#{taskName}_model.yml", modelYML)
         
         puts(modelYML)
+        
     end
     
     def each_auto_gen_source_directory(&block)
