@@ -1,6 +1,12 @@
 #include "Task.hpp"
 #include <stdexcept>
 
+models::Task::Task() : usesTransformer(false)
+{
+
+}
+
+
 void models::Task::setModelName(const std::string &name)
 {
     modelName = name;

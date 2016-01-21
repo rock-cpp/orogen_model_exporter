@@ -10,8 +10,21 @@
 namespace models
 {
 
+class YAMLImporter;
+    
+class Transformation
+{
+    std::string source;
+    std::string target;
+public:
+    const std::string &getSourceFrame() const;
+    const std::string &getTargetFrame() const;
+    
+};
+    
 class Task
 {
+friend class models::YAMLImporter;
     std::vector<Port> inputPorts;
     std::vector<Port> outputPorts;
     std::vector<Property> properties;
@@ -24,7 +37,20 @@ class Task
     
     std::string modelName;
     
+    std::vector<Transformation> transformation;
+    std::vector<Transformation> remappedTransformation;
+    
+    bool usesTransformer;
+
+    
 public:
+    
+    Task();
+    
+    bool hasTransformer() const;
+    
+    std::vector<std::string> getTransformerFrames();
+    const std::vector<Transformation> getNeededTransformations();
     
     void setModelName(const std::string &name);
     const std::string &getModelName() const;
