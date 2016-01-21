@@ -28,8 +28,6 @@ models::Task models::YAMLImporter::fromFile(const std::string& filename) const
     return fromString(buffer.str());
 }
 
-void fillTaskL1(models::Task &task, const YAML::Node &node);
-
 models::Task models::YAMLImporter::fromString(const std::string& ymlString) const
 {
     YAML::Node doc = YAML::Load(ymlString);
@@ -44,7 +42,26 @@ models::Task models::YAMLImporter::fromString(const std::string& ymlString) cons
     
     if(doc.Type() == YAML::NodeType::Map)
     {
-        fillTaskL1(task, doc);
+        bool onlyOuter = true;
+        bool onlyInner = true;
+        for(const auto &outer: doc)
+        {
+            if(!onlyOuter)
+                throw std::runtime_error("models::YAMLImporter::fromString : Error more than one top node detected : second is" + outer.first.as<std::string>());
+            
+            for(const auto &inner: outer)
+            {
+                if(!onlyInner)
+                    throw std::runtime_error("models::YAMLImporter::fromString : Error more than one top node detected : second is" + inner.first.as<std::string>());
+
+                task.setModelName(outer.first.as<std::string>() + "::" + task.getModelName() + inner.first.as<std::string>());
+            
+                fillTask(task, inner.second);
+                
+                onlyInner = false;
+            }        
+            onlyOuter = false;
+        }
     }
     
     return task;
@@ -68,7 +85,7 @@ void addPorts(models::Task &task, const YAML::Node &node, boost::function<void (
     }
 }
 
-void fillTaskL3(models::Task &task, const YAML::Node &node)
+void models::YAMLImporter::fillTask(models::Task& task, const YAML::Node& node) const
 {
     addPorts<models::Port>(task, node["inputPorts"], boost::bind(&models::Task::addInputPort, &task, _1));
     addPorts<models::Port>(task, node["outputPorts"], boost::bind(&models::Task::addOutputPort, &task, _1));
@@ -91,39 +108,6 @@ void fillTaskL3(models::Task &task, const YAML::Node &node)
         
         task.addOperation(models::Operation(opName, ret, args));
     }
-}
-
-void fillTaskL2(models::Task &task, const YAML::Node &node)
-{
-    bool first = true;
-    for(YAML::const_iterator it = node.begin(); it != node.end(); it++)
-    {
-        if(!first)
-            throw std::runtime_error("models::YAMLImporter::fromString : Error more than one top node detected : second is" + it->first.as<std::string>());
-        
-        task.setModelName(task.getModelName() + it->first.as<std::string>());
-//         std::string memberName = it->first.as<std::string>();
-//         std::cout << "Task Name : " << memberName << std::endl;
-        
-        fillTaskL3(task, it->second);
-        first = false;
-    }
-}
-
-void fillTaskL1(models::Task &task, const YAML::Node &node)
-{
-    bool first = true;
-    for(YAML::const_iterator it = node.begin(); it != node.end(); it++)
-    {
-        if(!first)
-            throw std::runtime_error("models::YAMLImporter::fromString : Error more than one top node detected : second is" + it->first.as<std::string>());
-        
-//         std::string memberName = it->first.as<std::string>();
-//         std::cout << "module Name : " << memberName << std::endl;
-
-        task.setModelName(it->first.as<std::string>() + "::");
-        
-        fillTaskL2(task, it->second);
-        first = false;
-    }
+    
+    task.usesTransformer = true;
 }
