@@ -9,7 +9,11 @@ namespace models
 class RuntimePlugin
 {
 public:
+    RuntimePlugin *getInstance();
+    
     void setTaskModel(Task &model);
+    
+    
     
     virtual bool cleanup();
     virtual bool configure();
@@ -18,16 +22,24 @@ public:
     virtual bool stop();    
 };
 
+// #include <orocos_cpp/Configuration.hpp>
+
 class ConfigurationPlugin : public RuntimePlugin
 {
-    void applyConfig();
+    //TODO Configuration class
+    void applyConfig(std::vector<std::string> config);
 };
 
 class TransformerPlugin : public RuntimePlugin
 {
+    std::vector<std::pair<std::string, std::string>> transformations;
+public:
     virtual bool configure();
     
-    void getNeededTransforms();
+    void getNeededTransformations();
+
+    
+    
     
 };
 /**
