@@ -17,14 +17,29 @@ models::Task::Task()
 
 }
 
-void models::Task::setModelName(const std::string &name)
+void models::Task::setModuleName(const std::string& name)
 {
-    modelName = name;
+    moduleName = name;
 }
 
-const std::string& models::Task::getModelName() const
+const std::string& models::Task::getModuleName() const
 {
-    return modelName;
+    return moduleName;
+}
+
+void models::Task::setTaskName(const std::string& name)
+{
+    taskName = name;
+}
+
+const std::string& models::Task::getTaskName() const
+{
+    return taskName;
+}
+
+const std::string models::Task::getModelName() const
+{
+    return moduleName + "::" + taskName;
 }
 
 

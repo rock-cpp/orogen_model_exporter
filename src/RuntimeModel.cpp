@@ -67,10 +67,19 @@ models::RuntimePlugin* models::RuntimeModel::getPlugin(const std::string& name)
     return it->second;
 }
 
+models::TransformerPlugin::TransformerPlugin(): RuntimePlugin("transformer")
+{
+
+}
 
 bool models::TransformerPlugin::configure()
 {
     return models::RuntimePlugin::configure();
+}
+
+models::RuntimePlugin* models::TransformerPlugin::getNewInstance()
+{
+    return new TransformerPlugin();
 }
 
 const std::vector< models::Transformation > models::TransformerPlugin::getNeededTransformations() const

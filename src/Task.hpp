@@ -36,14 +36,19 @@ friend class models::YAMLImporter;
     std::map<std::string, Property> propertyMap;
     std::map<std::string, Operation> operationMap;
     
-    std::string modelName;
+    std::string moduleName;
+    std::string taskName;
     
 public:
     
     Task();
+    void setModuleName(const std::string &name);
+    const std::string &getModuleName() const;
+
+    void setTaskName(const std::string &name);
+    const std::string &getTaskName() const;
     
-    void setModelName(const std::string &name);
-    const std::string &getModelName() const;
+    const std::string getModelName() const;
     
     void addInputPort(const Port &port);
     void addOutputPort(const Port &port);

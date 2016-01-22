@@ -50,13 +50,14 @@ models::Task models::YAMLImporter::fromString(const std::string& ymlString) cons
                 throw std::runtime_error("models::YAMLImporter::fromString : Error more than one top node detected : second is" + outer.first.as<std::string>());
             
 //             std::cout << "IS Sequence" << 
+            task.setModuleName(outer.first.as<std::string>());
             
             for(const auto &inner: outer.second)
             {
                 if(!onlyInner)
                     throw std::runtime_error("models::YAMLImporter::fromString : Error more than one top node detected : second is" + inner.first.as<std::string>());
 
-                task.setModelName(outer.first.as<std::string>() + "::" + task.getModelName() + inner.first.as<std::string>());
+                task.setTaskName(inner.first.as<std::string>());
             
                 fillTask(task, inner.second);
                 
@@ -92,39 +93,25 @@ void models::YAMLImporter::addPlugins(models::RuntimeModel& model, const YAML::N
 {
     if(node["transformer"])
     {
+        std::cout << "The Transformer is ehre " << std::endl;
         TransformerPlugin *trPlugin = dynamic_cast<TransformerPlugin *>(PluginStore::getInstace().getNewPluginInstance("transformer"));
+        
+        if(!trPlugin)
+            throw std::runtime_error("Error, Transformer Plugin not registered");
+        
         model.registerPlugin(trPlugin);
         
         const YAML::Node &tr(node["transformer"]);
         
         for(const YAML::Node &frame : tr["Frames"])
         {
-//             task.frames.push_back(frame.as<std::string>());
+            trPlugin->frames.push_back(frame.as<std::string>());
         }
         
         for(const YAML::Node &trans : tr["Transformations"])
         {
-//             task.transformations.push_back(Transformation(trans["From"].as<std::string>(), trans["To"].as<std::string>()));
+            trPlugin->unMappedTransformations.push_back(Transformation(trans["From"].as<std::string>(), trans["To"].as<std::string>()));
         }
-        
-//     for(const YAML::Node &op: )
-//     {
-//         
-// //         std::cout << "Adding " << portNode[NAME].as<std::string>() << " " <<  portNode[TYPE].as<std::string>() << std::endl;
-//         std::string opName = op[NAME].as<std::string>();
-//         std::string ret = op[RETURN][TYPE].as<std::string>();
-//         std::vector<models::Argument> args;
-//         
-//         for(const YAML::Node &arg: op["Arguments"])
-//         {
-//             addTypeWithDoc<models::Argument>(arg, [&] (const models::Argument &a) {
-//                 args.push_back(a);
-//             });
-//         }
-//         
-//         task.addOperation(models::Operation(opName, ret, args));
-//     }
-
     }
 }
 
@@ -140,14 +127,14 @@ void models::YAMLImporter::fillTask(models::Task& task, const YAML::Node& input)
         if(!onlyOuter)
             throw std::runtime_error("models::YAMLImporter::fromString : Error more than one top node detected : second is" + outer.first.as<std::string>());
         
-//             std::cout << "IS Sequence" << 
-        
+        task.setModuleName(outer.first.as<std::string>());
+            
         for(const auto &inner: outer.second)
         {
             if(!onlyInner)
                 throw std::runtime_error("models::YAMLImporter::fromString : Error more than one top node detected : second is" + inner.first.as<std::string>());
 
-            task.setModelName(outer.first.as<std::string>() + "::" + task.getModelName() + inner.first.as<std::string>());
+            task.setTaskName(inner.first.as<std::string>());
         
             nodeP = &(inner.second);
             
@@ -179,17 +166,24 @@ void models::YAMLImporter::fillTask(models::Task& task, const YAML::Node& input)
         
         task.addOperation(models::Operation(opName, ret, args));
     }
-
-//     if(node["Plugins"])
-//     {
-//         addPlugins(task, node["Plugins"]);
-//     }
-//     
 }
 
 models::RuntimeModel models::YAMLImporter::getRunntimeModelfromFile(const std::string& filename) const
 {
+    using namespace boost::filesystem;
     
+    path path(filename);
+
+    if(!exists(path))
+    {
+        throw std::runtime_error(std::string("Error, could not find model file ") + path.c_str());
+    }
+
+    std::ifstream fin(path.c_str());
+    std::stringstream buffer;
+    buffer << fin.rdbuf();
+    
+    return getRunntimeModelFromString(buffer.str());    
 }
 
 models::RuntimeModel models::YAMLImporter::getRunntimeModelFromString(const std::string& ymlString) const
@@ -200,9 +194,7 @@ models::RuntimeModel models::YAMLImporter::getRunntimeModelFromString(const std:
     if(doc.Type() != YAML::NodeType::Map)
     {
         std::cout << "Error, model section should only contain yml maps" << std::endl;
-//             return false;
     }
-
 
     Task task;
     
@@ -210,10 +202,10 @@ models::RuntimeModel models::YAMLImporter::getRunntimeModelFromString(const std:
 
     models::RuntimeModel rModel(task);
 
-    
-    if(doc[0][0]["Plugins"])
+    if(doc[task.getModuleName()][task.getTaskName()]["Plugins"])
     {
-        addPlugins(rModel, doc[0][0]["Plugins"]);
+        std::cout << "Got Plugins " << std::endl;
+        addPlugins(rModel, doc[task.getModuleName()][task.getTaskName()]["Plugins"]);
     }
     
     return rModel;

@@ -13,7 +13,11 @@ class RuntimePlugin
 public:
     RuntimePlugin(const std::string &name) : name(name) {};
 
-    friend std::ostream& operator<< (std::ostream& s, const RuntimePlugin &p) {return s;};
+    friend std::ostream& operator<< (std::ostream& s, const RuntimePlugin &p) 
+    {
+        p.printPluginData(s);
+        return s;
+    };
     
     virtual RuntimePlugin *getNewInstance() = 0;
     
@@ -31,6 +35,8 @@ public:
     virtual bool recover() {return true;};
     virtual bool start() {return true;};
     virtual bool stop() {return true;};
+protected :
+    virtual void printPluginData(std::ostream& s) const {};
 };
 
 class PluginStore
@@ -70,13 +76,18 @@ class TransformerPlugin : public RuntimePlugin
     bool usesTransformer;
 
 public:
+    
+    TransformerPlugin();
+    
     virtual bool configure();
+    
+    virtual RuntimePlugin* getNewInstance();
     
     std::vector<std::string> getTransformerFrames() const;
     const std::vector<Transformation> getUnmappedTransformations() const;
     const std::vector<Transformation> getNeededTransformations() const;
     
-    virtual std::ostream& operator<<(std::ostream& s)
+    virtual void printPluginData(std::ostream& s) const 
     {
         s << "Known Frames : " << std::endl;
         for(const std::string &p: getTransformerFrames())
@@ -88,8 +99,6 @@ public:
         {
             s << "    " << p.getSourceFrame() << "2" << p.getTargetFrame() << std::endl;
         }
-        
-        return s;
     }
 };
 /**
@@ -118,10 +127,10 @@ public:
     void registerPlugin(RuntimePlugin *plugin);
     RuntimePlugin *getPlugin(const std::string &name);
 
-    virtual std::ostream& operator<<(std::ostream& s)
+    friend std::ostream& operator<<(std::ostream& s, const RuntimeModel &m)
     {
-        s << taskState << std::endl;
-        for(const auto it : plugins)
+        s << m.taskState << std::endl;
+        for(const auto it : m.plugins)
         {
             RuntimePlugin * pl = it.second;
             s << *pl << std::endl;
