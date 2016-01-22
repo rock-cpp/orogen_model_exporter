@@ -9,6 +9,7 @@ rock_library(modelLib
         Operation.cpp
         DocumentedObject.cpp
         YAMLImporter.cpp
+        RuntimeModel.cpp
     HEADERS 
         Task.hpp
         Port.hpp

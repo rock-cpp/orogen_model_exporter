@@ -1,11 +1,21 @@
 #include "Task.hpp"
 #include <stdexcept>
 
-models::Task::Task() : usesTransformer(false)
+const std::string& models::Transformation::getSourceFrame() const
+{
+    return source;
+}
+
+const std::string& models::Transformation::getTargetFrame() const
+{
+    return target;
+}
+
+
+models::Task::Task()
 {
 
 }
-
 
 void models::Task::setModelName(const std::string &name)
 {

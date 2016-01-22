@@ -17,6 +17,7 @@ class Transformation
     std::string source;
     std::string target;
 public:
+    Transformation(std::string source, std::string target) : source(source), target(target) {};
     const std::string &getSourceFrame() const;
     const std::string &getTargetFrame() const;
     
@@ -37,20 +38,9 @@ friend class models::YAMLImporter;
     
     std::string modelName;
     
-    std::vector<Transformation> transformation;
-    std::vector<Transformation> remappedTransformation;
-    
-    bool usesTransformer;
-
-    
 public:
     
     Task();
-    
-    bool hasTransformer() const;
-    
-    std::vector<std::string> getTransformerFrames();
-    const std::vector<Transformation> getNeededTransformations();
     
     void setModelName(const std::string &name);
     const std::string &getModelName() const;
@@ -113,6 +103,20 @@ public:
             }
             s << ")" << std::endl; 
         }
+
+//         if(t.hasTransformer())
+//         {
+//             s << "Known Frames : " << std::endl;
+//             for(const std::string &p: t.getTransformerFrames())
+//             {
+//                 s << "    " << p << std::endl;
+//             }
+//             s << "Transformations : " << std::endl;
+//             for(const Transformation &p: t.getUnmappedTransformations())
+//             {
+//                 s << "    " << p.getSourceFrame() << "2" << p.getTargetFrame() << std::endl;
+//             }
+//         }
         
         return s;
     }
