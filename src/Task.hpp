@@ -89,7 +89,7 @@ public:
         s << "Properties : " << std::endl;
         for(const Property &p: t.getProperties())
         {
-            s << "    " << p.getName() << "<" << p.getType() << ">" << std::endl;
+            s << "    " << p.getType() << " " << p.getName() << std::endl;
         }
         s << "Operations : " << std::endl;
         for(const Operation &p: t.getOperations())

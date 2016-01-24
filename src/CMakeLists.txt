@@ -16,6 +16,7 @@ rock_library(modelLib
         Property.hpp
         YAMLImporter.hpp
     DEPS_PKGCONFIG
+        lib_config
         yaml-cpp
     DEPS_PLAIN 
         Boost_SYSTEM Boost_FILESYSTEM

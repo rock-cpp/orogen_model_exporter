@@ -5,12 +5,16 @@
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 
+namespace models {
+    
+
 const std::string NAME = "Name";
 const std::string DOC = "Doc";
 const std::string RETURN = "Return";
 const std::string TYPE = "Type";
+const std::string DEFAULT_VALUE = "DefaultVal";
 
-models::Task models::YAMLImporter::fromFile(const std::string& filename) const
+Task YAMLImporter::fromFile(const std::string& filename) const
 {
     using namespace boost::filesystem;
     
@@ -28,11 +32,11 @@ models::Task models::YAMLImporter::fromFile(const std::string& filename) const
     return fromString(buffer.str());
 }
 
-models::Task models::YAMLImporter::fromString(const std::string& ymlString) const
+Task YAMLImporter::fromString(const std::string& ymlString) const
 {
     YAML::Node doc = YAML::Load(ymlString);
     
-    models::Task task;
+    Task task;
     
     if(doc.Type() != YAML::NodeType::Map)
     {
@@ -47,7 +51,7 @@ models::Task models::YAMLImporter::fromString(const std::string& ymlString) cons
         for(const auto &outer: doc)
         {
             if(!onlyOuter)
-                throw std::runtime_error("models::YAMLImporter::fromString : Error more than one top node detected : second is" + outer.first.as<std::string>());
+                throw std::runtime_error("YAMLImporter::fromString : Error more than one top node detected : second is" + outer.first.as<std::string>());
             
 //             std::cout << "IS Sequence" << 
             task.setModuleName(outer.first.as<std::string>());
@@ -55,7 +59,7 @@ models::Task models::YAMLImporter::fromString(const std::string& ymlString) cons
             for(const auto &inner: outer.second)
             {
                 if(!onlyInner)
-                    throw std::runtime_error("models::YAMLImporter::fromString : Error more than one top node detected : second is" + inner.first.as<std::string>());
+                    throw std::runtime_error("YAMLImporter::fromString : Error more than one top node detected : second is" + inner.first.as<std::string>());
 
                 task.setTaskName(inner.first.as<std::string>());
             
@@ -79,7 +83,7 @@ void addTypeWithDoc(const YAML::Node &node, boost::function<void (const F &p)> f
 
 
 template <class F>
-void addPorts(models::Task &task, const YAML::Node &node, boost::function<void (const F &p)> f)
+void addPorts(const YAML::Node &node, boost::function<void (const F &p)> f)
 {
     for(const YAML::Node &portNode: node)
     {
@@ -88,8 +92,33 @@ void addPorts(models::Task &task, const YAML::Node &node, boost::function<void (
     }
 }
 
+void addProperty(const YAML::Node &node, boost::function<void (const Property &p)> f)
+{
+    std::string doc;
+    
+    if(node[DOC])
+        doc = node[DOC].as<std::string>();
+    
+    if(node[DEFAULT_VALUE])
+    {
+        f(Property(node[NAME].as<std::string>(), node[TYPE].as<std::string>(), doc, node[DEFAULT_VALUE].as<std::string>()));
+    }
+    else
+    {
+        f(Property(node[NAME].as<std::string>(), node[TYPE].as<std::string>(), doc));
+    }
+}
 
-void models::YAMLImporter::addPlugins(models::RuntimeModel& model, const YAML::Node& node) const
+
+void addProperties(const YAML::Node &node, boost::function<void (const Property &p)> f)
+{
+    for(const YAML::Node &propNode: node)
+    {
+        addProperty(propNode, f);
+    }    
+}
+
+void YAMLImporter::addPlugins(RuntimeModel& model, const YAML::Node& node) const
 {
     if(node["transformer"])
     {
@@ -115,7 +144,7 @@ void models::YAMLImporter::addPlugins(models::RuntimeModel& model, const YAML::N
     }
 }
 
-void models::YAMLImporter::fillTask(models::Task& task, const YAML::Node& input) const
+void YAMLImporter::fillTask(Task& task, const YAML::Node& input) const
 {
     bool onlyOuter = true;
     bool onlyInner = true;
@@ -125,14 +154,14 @@ void models::YAMLImporter::fillTask(models::Task& task, const YAML::Node& input)
     for(const auto &outer: input)
     {
         if(!onlyOuter)
-            throw std::runtime_error("models::YAMLImporter::fromString : Error more than one top node detected : second is" + outer.first.as<std::string>());
+            throw std::runtime_error("YAMLImporter::fromString : Error more than one top node detected : second is" + outer.first.as<std::string>());
         
         task.setModuleName(outer.first.as<std::string>());
             
         for(const auto &inner: outer.second)
         {
             if(!onlyInner)
-                throw std::runtime_error("models::YAMLImporter::fromString : Error more than one top node detected : second is" + inner.first.as<std::string>());
+                throw std::runtime_error("YAMLImporter::fromString : Error more than one top node detected : second is" + inner.first.as<std::string>());
 
             task.setTaskName(inner.first.as<std::string>());
         
@@ -145,9 +174,9 @@ void models::YAMLImporter::fillTask(models::Task& task, const YAML::Node& input)
 
     const YAML::Node &node(*nodeP);
     
-    addPorts<models::Port>(task, node["inputPorts"], boost::bind(&models::Task::addInputPort, &task, _1));
-    addPorts<models::Port>(task, node["outputPorts"], boost::bind(&models::Task::addOutputPort, &task, _1));
-    addPorts<models::Property>(task, node["properties"], boost::bind(&models::Task::addProperty, &task, _1));
+    addPorts<Port>(node["inputPorts"], boost::bind(&Task::addInputPort, &task, _1));
+    addPorts<Port>(node["outputPorts"], boost::bind(&Task::addOutputPort, &task, _1));
+    addProperties(node["properties"], boost::bind(&Task::addProperty, &task, _1));
     
     for(const YAML::Node &op: node["operations"])
     {
@@ -155,20 +184,20 @@ void models::YAMLImporter::fillTask(models::Task& task, const YAML::Node& input)
 //         std::cout << "Adding " << portNode[NAME].as<std::string>() << " " <<  portNode[TYPE].as<std::string>() << std::endl;
         std::string opName = op[NAME].as<std::string>();
         std::string ret = op[RETURN][TYPE].as<std::string>();
-        std::vector<models::Argument> args;
+        std::vector<Argument> args;
         
         for(const YAML::Node &arg: op["Arguments"])
         {
-            addTypeWithDoc<models::Argument>(arg, [&] (const models::Argument &a) {
+            addTypeWithDoc<Argument>(arg, [&] (const Argument &a) {
                 args.push_back(a);
             });
         }
         
-        task.addOperation(models::Operation(opName, ret, args));
+        task.addOperation(Operation(opName, ret, args));
     }
 }
 
-models::RuntimeModel models::YAMLImporter::getRunntimeModelfromFile(const std::string& filename) const
+RuntimeModel YAMLImporter::getRunntimeModelfromFile(const std::string& filename) const
 {
     using namespace boost::filesystem;
     
@@ -186,7 +215,7 @@ models::RuntimeModel models::YAMLImporter::getRunntimeModelfromFile(const std::s
     return getRunntimeModelFromString(buffer.str());    
 }
 
-models::RuntimeModel models::YAMLImporter::getRunntimeModelFromString(const std::string& ymlString) const
+RuntimeModel YAMLImporter::getRunntimeModelFromString(const std::string& ymlString) const
 {
     YAML::Node doc = YAML::Load(ymlString);
     
@@ -200,7 +229,7 @@ models::RuntimeModel models::YAMLImporter::getRunntimeModelFromString(const std:
     
     fillTask(task, doc);
 
-    models::RuntimeModel rModel(task);
+    RuntimeModel rModel(task);
 
     if(doc[task.getModuleName()][task.getTaskName()]["Plugins"])
     {
@@ -212,3 +241,4 @@ models::RuntimeModel models::YAMLImporter::getRunntimeModelFromString(const std:
     
 }
 
+}
