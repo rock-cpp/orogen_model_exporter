@@ -44,7 +44,7 @@ void models::Property::setValue(std::shared_ptr<libConfig::ConfigValue> newVal)
     if(value->getType() != newVal->getType())
         throw std::runtime_error("Error, configuration values may not change !");
 
-    *value = *newVal;
+    value = newVal;
 }
 
 const libConfig::ConfigValue& models::Property::getValue() const

@@ -96,8 +96,13 @@ public:
         {
             s << "    " << p << std::endl;
         }
-        s << "Transformations : " << std::endl;
+        s << "Unmapped Transformations : " << std::endl;
         for(const Transformation &p: getUnmappedTransformations())
+        {
+            s << "    " << p.getSourceFrame() << "2" << p.getTargetFrame() << std::endl;
+        }
+        s << "Mapped Transformations : " << std::endl;
+        for(const Transformation &p: getNeededTransformations())
         {
             s << "    " << p.getSourceFrame() << "2" << p.getTargetFrame() << std::endl;
         }

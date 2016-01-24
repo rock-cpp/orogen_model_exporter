@@ -94,8 +94,20 @@ bool models::TransformerPlugin::configure()
         const libConfig::SimpleConfigValue *sval = dynamic_cast<const libConfig::SimpleConfigValue *>(&(prop.getValue()));
         
         frameRemapMap[frame] = sval->getValue();
+        std::cout << "Config Value  is ";
+        sval->print();
+        std::cout << std::endl;;
     }
+
+    transformations.clear();
+    transformations.reserve(unMappedTransformations.size());
     
+    for(const Transformation &tr : unMappedTransformations)
+    {
+        transformations.push_back(Transformation(frameRemapMap[tr.getSourceFrame()], 
+                                                frameRemapMap[tr.getTargetFrame()]));
+    }
+        
     return models::RuntimePlugin::configure();
 }
 
