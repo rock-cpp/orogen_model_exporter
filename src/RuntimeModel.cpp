@@ -55,6 +55,8 @@ void models::RuntimeModel::registerPlugin(models::RuntimePlugin* plugin)
     if(it != plugins.end())
         throw std::runtime_error("There is already a plugin with the name " + plugin->getName() + " registered");
     
+    plugin->setTaskModel(taskState);
+    
     plugins[plugin->getName()] = plugin;
 }
 
@@ -74,6 +76,26 @@ models::TransformerPlugin::TransformerPlugin(): RuntimePlugin("transformer")
 
 bool models::TransformerPlugin::configure()
 {
+    std::map<std::string, std::string> frameRemapMap;
+    
+    for(const std::string &frame : frames)
+    {
+        const std::string propName = frame + "_frame";
+        if(!getModel().hasProperty(propName))
+            throw std::runtime_error("Internal Error, task model does not contain the expected frame renaming properties");
+        
+        const Property &prop(getModel().getProperty(propName));
+        
+        if(prop.getValue().getType() != libConfig::ConfigValue::SIMPLE)
+        {
+            throw std::runtime_error("Internal Error, remap properties must be SIMPLE config values (aka string)");
+        }
+        
+        const libConfig::SimpleConfigValue *sval = dynamic_cast<const libConfig::SimpleConfigValue *>(&(prop.getValue()));
+        
+        frameRemapMap[frame] = sval->getValue();
+    }
+    
     return models::RuntimePlugin::configure();
 }
 
@@ -110,7 +132,10 @@ bool models::RuntimeModel::cleanup()
 
 bool models::RuntimeModel::configure()
 {
-    return true;
+    bool ret = true;
+    for(const auto &p : plugins)
+        ret &= p.second->configure();
+    return ret;
 }
 
 bool models::RuntimeModel::recover()

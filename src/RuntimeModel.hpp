@@ -36,6 +36,11 @@ public:
     virtual bool start() {return true;};
     virtual bool stop() {return true;};
 protected :
+    Task &getModel()
+    {
+        return *model;
+    };
+    
     virtual void printPluginData(std::ostream& s) const {};
 };
 
@@ -72,9 +77,6 @@ class TransformerPlugin : public RuntimePlugin
     std::vector<std::string> frames;
     std::vector<Transformation> unMappedTransformations;
     std::vector<Transformation> transformations;
-    
-    bool usesTransformer;
-
 public:
     
     TransformerPlugin();

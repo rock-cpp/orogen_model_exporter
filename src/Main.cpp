@@ -18,5 +18,7 @@ int main(int argc, char **argv)
     models::RuntimeModel t = importer.getRunntimeModelfromFile(argv[1]);
     std::cout << t << std::endl;
     
+    t.configure();
+    
     return 0;
 }
