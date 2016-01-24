@@ -6,6 +6,8 @@ models::Property::Property(const std::string& name, const std::string& type, con
 {
     libConfig::YAMLConfigParser parser;
     value = parser.getConfigValue(configYML);
+    
+    value->setName(name);
 }
 
 models::Property::Property(const std::string& name, const std::string& type, const std::string& doc): TypedObject(name, type), DocumentedObject(doc)
@@ -36,6 +38,7 @@ void models::Property::setValue(std::shared_ptr<libConfig::ConfigValue> newVal)
                 break;
                 
         }
+        value->setName(getName());
     }
     
     if(value->getType() != newVal->getType())
