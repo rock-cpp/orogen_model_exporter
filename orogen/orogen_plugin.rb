@@ -99,10 +99,17 @@ class ModelExporterPlugin <  OroGen::Spec::TaskModelExtension
         yield "models"
     end
 
+    def registered_on(task_context)
+        #generate empty CMakeList as default
+        #this is needed, as the build is included
+        #even if no task is generated
+        Orocos::Generation.save_automatic('models', "CMakeLists.txt", "")
+    end
 end
 
 class OroGen::Spec::TaskContext
     def modelExport
+        puts("#{self.name}")
         if !find_extension("ModelExporterPlugin")
             register_extension(ModelExporterPlugin.new)
             puts("Model Export active")
