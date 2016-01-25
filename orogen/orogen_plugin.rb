@@ -92,9 +92,6 @@ class ModelExporterPlugin <  OroGen::Spec::TaskModelExtension
         Orocos::Generation.save_automatic('models', "CMakeLists.txt", cmake)
         
         Orocos::Generation.save_automatic('models', "#{moduleName}::#{taskName}.yml", modelYML)
-        
-        puts(modelYML)
-        
     end
     
     def each_auto_gen_source_directory(&block)
@@ -106,6 +103,7 @@ end
 
 class OroGen::Spec::TaskContext
     def modelExport
+        puts("Model Export active")
         register_extension(ModelExporterPlugin.new)
         puts("Model Export active")
     end
