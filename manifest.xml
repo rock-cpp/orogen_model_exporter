@@ -10,5 +10,5 @@
   <depend package="orogen" />
   <depend package="tools/orocos_cpp_base" />
   <depend package="tools/lib_config" />
-  <depend package="external/yaml-cpp03" />
+  <depend package="yaml-cpp" />
 </package>
