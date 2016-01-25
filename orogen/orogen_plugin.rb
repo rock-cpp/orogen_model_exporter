@@ -103,9 +103,10 @@ end
 
 class OroGen::Spec::TaskContext
     def modelExport
-        puts("Model Export active")
-        register_extension(ModelExporterPlugin.new)
-        puts("Model Export active")
+        if !find_extension("ModelExporterPlugin")
+            register_extension(ModelExporterPlugin.new)
+            puts("Model Export active")
+       end
     end
     
 end
