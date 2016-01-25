@@ -82,8 +82,12 @@ class ModelExporterPlugin <  OroGen::Spec::TaskModelExtension
         
         modelYML = Psych.dump(doc);
                 
-        # FIXME needs to be save in .orogen/models
-        Orocos::Generation.save_generated(true, 'models', "#{moduleName}::#{taskName}_model.yml", modelYML)
+        template_dir = File.join(File.dirname(__FILE__), "../templates")
+
+        cmake = Orocos::Generation.render_template template_dir, 'models', 'CMakeLists.txt', binding
+        Orocos::Generation.save_automatic('models', "CMakeLists.txt", cmake)
+        
+        Orocos::Generation.save_automatic('models', "#{moduleName}::#{taskName}.yml", modelYML)
         
         puts(modelYML)
         
