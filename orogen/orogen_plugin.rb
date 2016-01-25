@@ -2,6 +2,10 @@ require 'yaml'
 
 class ModelExporterPlugin <  OroGen::Spec::TaskModelExtension
 
+    def initialize()
+        super("ModelExporterPlugin")
+    end
+
     # implement extension for task
     def pre_generation_hook(task)
     end
