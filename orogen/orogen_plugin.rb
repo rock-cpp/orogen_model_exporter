@@ -2,8 +2,11 @@ require 'yaml'
 
 class ModelExporterPlugin <  OroGen::Spec::TaskModelExtension
 
+    @hasTasks
+    
     def initialize()
         super("ModelExporterPlugin")
+        @hasTasks = false
     end
 
     # implement extension for task
@@ -92,19 +95,16 @@ class ModelExporterPlugin <  OroGen::Spec::TaskModelExtension
         Orocos::Generation.save_automatic('models', "CMakeLists.txt", cmake)
         
         Orocos::Generation.save_automatic('models', "#{moduleName}::#{taskName}.yml", modelYML)
+        @hasTasks = true
     end
     
     def each_auto_gen_source_directory(&block)
         return enum_for(:each_test) unless block_given?
-        yield "models"
+        if(@hasTasks)
+            yield "models"
+        end
     end
 
-    def registered_on(task_context)
-        #generate empty CMakeList as default
-        #this is needed, as the build is included
-        #even if no task is generated
-        Orocos::Generation.save_automatic('models', "CMakeLists.txt", "")
-    end
 end
 
 class OroGen::Spec::TaskContext
