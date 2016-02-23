@@ -95,7 +95,7 @@ bool models::TransformerPlugin::configure()
         
         frameRemapMap[frame] = sval->getValue();
         std::cout << "Config Value  is ";
-        sval->print();
+        sval->print(std::cout);
         std::cout << std::endl;;
     }
 
