@@ -68,6 +68,8 @@ public:
 
     bool hasProperty(const std::string name) const;
     const Property &getProperty(const std::string name) const;
+
+    Property &getProperty(const std::string name);
     
     bool hasOperation(const std::string name) const;
     const Operation &getOperation(const std::string name) const;

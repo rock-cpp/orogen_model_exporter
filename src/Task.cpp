@@ -91,6 +91,18 @@ const F &getObject(const std::map<std::string, F> &map, const std::string& name,
     return it->second;
 }
 
+template <class F>
+F &getObjectNC(std::map<std::string, F> &map, const std::string& name, const std::string &objectName)
+{
+    typename std::map<std::string, F>::iterator it = map.find(name);
+    if(it == map.end())
+    {
+        throw std::runtime_error("models::Task::get" + objectName + " : Error no " + objectName + " with name " + name + " registered");
+    }
+    
+    return it->second;
+}
+
 bool models::Task::hasInputPort(const std::string name) const
 {
     return hasValue(inputPortMap, name);
@@ -119,6 +131,11 @@ bool models::Task::hasProperty(const std::string name) const
 const models::Property& models::Task::getProperty(const std::string name) const
 {
     return getObject(propertyMap, name, "Property");
+}
+
+models::Property& models::Task::getProperty(const std::string name)
+{
+    return getObjectNC(propertyMap, name, "Property");
 }
 
 bool models::Task::hasOperation(const std::string name) const

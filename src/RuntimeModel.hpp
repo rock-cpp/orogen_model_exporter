@@ -29,6 +29,8 @@ public:
     virtual ~RuntimePlugin() {};
     
     void setTaskModel(Task &modelp) {model = &modelp;};
+
+    void applyConfig(const libConfig::Configuration& config);
     
     virtual bool cleanup() {return true;};
     virtual bool configure() {return true;};
@@ -61,14 +63,6 @@ private:
     PluginStore();
 };
 
-
-// #include <orocos_cpp/Configuration.hpp>
-
-class ConfigurationPlugin : public RuntimePlugin
-{
-    //TODO Configuration class
-    void applyConfig(std::vector<std::string> config);
-};
 
 class TransformerPlugin : public RuntimePlugin
 {

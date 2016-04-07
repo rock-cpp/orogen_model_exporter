@@ -74,6 +74,20 @@ models::TransformerPlugin::TransformerPlugin(): RuntimePlugin("transformer")
 
 }
 
+void models::RuntimePlugin::applyConfig(const libConfig::Configuration &config)
+{
+    for(const auto &cv: config.getValues())
+    {
+        if(!getModel().hasProperty(cv.first))
+            throw std::runtime_error("Error, task " + getName() + " of type " + getModel().getModelName() + " has not propertie " + cv.first);
+        
+        Property &p(getModel().getProperty(cv.first));
+        
+        p.mergeValue(cv.second);
+    }
+    
+}
+
 bool models::TransformerPlugin::configure()
 {
     std::map<std::string, std::string> frameRemapMap;
