@@ -15,6 +15,11 @@ rock_library(modelLib
         Port.hpp
         Property.hpp
         YAMLImporter.hpp
+        RuntimeModel.hpp
+        TypedObject.hpp
+        DocumentedObject.hpp
+        Operation.hpp
+        Argument.hpp
     DEPS_PKGCONFIG
         lib_config
         yaml-cpp
