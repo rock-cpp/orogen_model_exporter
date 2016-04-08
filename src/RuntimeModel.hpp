@@ -30,7 +30,6 @@ public:
     
     void setTaskModel(Task &modelp) {model = &modelp;};
 
-    void applyConfig(const libConfig::Configuration& config);
     
     virtual bool cleanup() {return true;};
     virtual bool configure() {return true;};
@@ -122,7 +121,8 @@ public:
     virtual bool recover();
     virtual bool start();
     virtual bool stop();
-    
+    void applyConfig(const libConfig::Configuration& config);
+
     const Task &getCurrentTaskState();
     
     void registerPlugin(RuntimePlugin *plugin);
