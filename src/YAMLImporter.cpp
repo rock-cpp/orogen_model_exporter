@@ -122,7 +122,7 @@ void YAMLImporter::addPlugins(RuntimeModel& model, const YAML::Node& node) const
 {
     if(node["transformer"])
     {
-        std::cout << "The Transformer is ehre " << std::endl;
+//        std::cout << "The Transformer is ehre " << std::endl;
         TransformerPlugin *trPlugin = dynamic_cast<TransformerPlugin *>(PluginStore::getInstace().getNewPluginInstance("transformer"));
         
         if(!trPlugin)
@@ -233,7 +233,7 @@ RuntimeModel YAMLImporter::getRunntimeModelFromString(const std::string& ymlStri
 
     if(doc[task.getModuleName()][task.getTaskName()]["Plugins"])
     {
-        std::cout << "Got Plugins " << std::endl;
+//        std::cout << "Got Plugins " << std::endl;
         addPlugins(rModel, doc[task.getModuleName()][task.getTaskName()]["Plugins"]);
     }
     

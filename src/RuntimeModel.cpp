@@ -49,18 +49,18 @@ const models::Task& models::RuntimeModel::getCurrentTaskState()
     return taskState;
 }
 
-void models::RuntimeModel::registerPlugin(models::RuntimePlugin* plugin)
+void models::RuntimeModel::registerPlugin(models::RuntimePlugin *plugin)
 {
     auto it = plugins.find(plugin->getName());
     if(it != plugins.end())
         throw std::runtime_error("There is already a plugin with the name " + plugin->getName() + " registered");
-    
+
     plugin->setTaskModel(taskState);
     
-    plugins[plugin->getName()] = plugin;
+    plugins[plugin->getName()] = std::shared_ptr<RuntimePlugin>(plugin);
 }
 
-models::RuntimePlugin* models::RuntimeModel::getPlugin(const std::string& name)
+std::shared_ptr<models::RuntimePlugin> models::RuntimeModel::getPlugin(const std::string& name)
 {
     auto it = plugins.find(name);
     if(it == plugins.end())
@@ -108,9 +108,9 @@ bool models::TransformerPlugin::configure()
         const libConfig::SimpleConfigValue *sval = dynamic_cast<const libConfig::SimpleConfigValue *>(&(prop.getValue()));
         
         frameRemapMap[frame] = sval->getValue();
-        std::cout << "Config Value  is ";
-        sval->print(std::cout);
-        std::cout << std::endl;;
+//        std::cout << "Config Value  is ";
+//        sval->print(std::cout);
+//        std::cout << std::endl;;
     }
 
     transformations.clear();
@@ -151,6 +151,28 @@ models::RuntimeModel::RuntimeModel(const models::Task& initialState) : taskState
     
 }
 
+//copy constructor (requires to reset reference to the object in its plugins).
+models::RuntimeModel::RuntimeModel(const RuntimeModel &toCopy){
+    *this = toCopy;
+}
+
+//assignment operator overload
+models::RuntimeModel& models::RuntimeModel::operator=(const RuntimeModel &toCopy){
+    plugins = toCopy.plugins;
+    taskState = toCopy.taskState;
+
+    //now reset pointers:
+    for(auto &plug : plugins){
+        plug.second->setTaskModel(taskState);
+    }
+
+    return *this;
+}
+
+//destruct
+models::RuntimeModel::~RuntimeModel(){
+}
+
 bool models::RuntimeModel::cleanup()
 {
     return true;
@@ -159,8 +181,9 @@ bool models::RuntimeModel::cleanup()
 bool models::RuntimeModel::configure()
 {
     bool ret = true;
-    for(const auto &p : plugins)
+    for(const auto &p : plugins){
         ret &= p.second->configure();
+    }
     return ret;
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Task.hpp"
+#include <memory>
 
 namespace models
 {
@@ -110,12 +111,13 @@ class RuntimeModel
     friend class YAMLImporter;
     
     Task taskState;
-    std::map<std::string, RuntimePlugin *> plugins;
+    std::map<std::string, std::shared_ptr<RuntimePlugin> > plugins;
 
 public:
     RuntimeModel(const Task &initialState);
+    RuntimeModel(const RuntimeModel &toCopy);
     
-    virtual ~RuntimeModel() {};
+    virtual ~RuntimeModel();
     virtual bool cleanup();
     virtual bool configure();
     virtual bool recover();
@@ -126,20 +128,24 @@ public:
     const Task &getCurrentTaskState();
     
     void registerPlugin(RuntimePlugin *plugin);
-    RuntimePlugin *getPlugin(const std::string &name);
+    std::shared_ptr<models::RuntimePlugin> getPlugin(const std::string &name);
+
+    //reuqired cause overload of copy constructor.
+    RuntimeModel& operator=(const RuntimeModel &toCopy);
 
     friend std::ostream& operator<<(std::ostream& s, const RuntimeModel &m)
     {
         s << m.taskState << std::endl;
         for(const auto it : m.plugins)
         {
-            RuntimePlugin * pl = it.second;
-            s << *pl << std::endl;
+//            RuntimePlugin * pl = it.second.get();
+            s << it.second << std::endl;
 //             s << *(it.second) << std::endl;
         }
         
         return s;
     }
+
 };
 
 }
