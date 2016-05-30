@@ -15,7 +15,7 @@ class ModelExporterPlugin <  OroGen::Spec::TaskModelExtension
     
     def post_generation_hook(task)
         #Do the export
-        puts("Post Gen")
+        #puts("Post Gen")
         doc = Hash.new()
         
         moduleName = task.project.name
@@ -109,10 +109,10 @@ end
 
 class OroGen::Spec::TaskContext
     def modelExport
-        puts("#{self.name}")
+        #puts("#{self.name}")
         if !find_extension("ModelExporterPlugin")
             register_extension(ModelExporterPlugin.new)
-            puts("Model Export active")
+            #puts("Model Export active")
        end
     end
     
