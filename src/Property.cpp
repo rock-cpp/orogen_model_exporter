@@ -6,8 +6,8 @@ models::Property::Property(const std::string& name, const std::string& type, con
 {
     libConfig::YAMLConfigParser parser;
     value = parser.getConfigValue(configYML);
-    
-    value->setName(name);
+    if(value)
+        value->setName(name);
 }
 
 models::Property::Property(const std::string& name, const std::string& type, const std::string& doc): TypedObject(name, type), DocumentedObject(doc)
