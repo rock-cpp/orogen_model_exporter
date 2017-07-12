@@ -83,8 +83,10 @@ class ModelExporterPlugin <  OroGen::Spec::TaskModelExtension
             taskHash['Plugins'] = {'transformer' => {'Frames' => transformer.available_frames.to_a,
                                    'Transformations' => transformer.needed_transformations.map{|t| {"From" => t.from, "To" => t.to} } }}
         end 
-        
 
+        taskHash['defaultActivity'] = task.default_activity
+        taskHash['eventPorts'] = task.event_ports.keys
+        
         doc[moduleName][taskName] = taskHash
         
         modelYML = Psych.dump(doc);
