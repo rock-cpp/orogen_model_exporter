@@ -16,4 +16,5 @@ install(FILES ${PROJECT_SOURCE_DIR}/orogen/orogen_plugin.rb
 install(FILES ${PROJECT_SOURCE_DIR}/lib/orogen_model_exporter.rb
         DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/ruby/vendor_ruby/)
 
-#add_subdirectory(src)
+install(PROGRAMS bin/rock-instantiate 
+        DESTINATION bin)
