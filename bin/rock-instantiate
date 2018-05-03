@@ -57,23 +57,51 @@ puts "Selected options:"
 puts options
 puts
 
+def update_model(task)
+	model = task.model
+	task.each_port do |p|
+		if p.is_a? Orocos::OutputPort
+			begin
+				model.output_port p.name, p.type
+			rescue ArgumentError => ex
+				next
+			end
+		elsif p.is_a? Orocos::InputPort
+			begin
+				model.input_port p.name, p.type
+			rescue ArgumentError => ex
+				next
+			end
+		else
+			throw "Unexpected Error"
+		end
+	end
+	return self
+end
+
+
 Bundles.public_logs = false
 Bundles.initialize
 
 begin
-	Orocos.run options[:task_model_name] => "instance", 
+	cname = options[:task_model_name]+"__"+options[:configs].join
+	Orocos.run options[:task_model_name] => cname, 
 	           :output => '/tmp/rock-instantiate.log',
 	           :oro_logfile => '/tmp/rock-instantiate-oro.log' do
-		inst = Orocos.get "instance"
+		inst = Orocos.get cname
 		begin
 			Orocos.conf.apply(inst, options[:configs], true)
+			inst.configure
 		rescue ArgumentError => err
 			puts "ERROR: Could not configure Task Context with config sections: " +
 			options[:configs].to_s() + ". The following Error was reported: \n"
 			puts err
 			exit(-2)
 		end
+
+		model = update_model(inst)
 		yaml = export_orogen_to_yaml(inst.model)
+
 		if options[:output_file]
 			f = open(options[:output_file], 'w')
 			f.write(yaml)
@@ -88,3 +116,4 @@ rescue ArgumentError => err
 	puts err
 	exit(-2)
 end
+
