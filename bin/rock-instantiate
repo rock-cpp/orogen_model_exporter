@@ -62,13 +62,14 @@ def update_model(task)
 	task.each_port do |p|
 		if p.is_a? Orocos::OutputPort
 			begin
-				model.output_port p.name, p.type
+				model.output_port p.name, p.orocos_type_name
 			rescue ArgumentError => ex
 				next
 			end
 		elsif p.is_a? Orocos::InputPort
 			begin
-				model.input_port p.name, p.type
+				model.input_port p.name, p.orocos_type_name
+
 			rescue ArgumentError => ex
 				next
 			end
