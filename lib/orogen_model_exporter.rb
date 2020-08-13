@@ -37,7 +37,12 @@ def export_orogen_to_yaml(task)
     task.each_dynamic_input_port do |port|
         portHash = Hash.new()
         portHash['Name'] = port.name.inspect()
-        portHash['Type'] = port.type.cxx_name
+        if port.type
+            portHash['Type'] = port.type.cxx_name
+        else
+            #dynamic ports must not necessarily define a type. E.g. tools/logger does not
+            portHash['Type'] = ""
+        end
         dynamicInputPorts << portHash
     end
     taskHash['dynamicInputPorts'] = dynamicInputPorts
@@ -46,7 +51,13 @@ def export_orogen_to_yaml(task)
     task.each_dynamic_output_port do |port|
         portHash = Hash.new()
         portHash['Name'] = port.name.inspect()
-e        portHash['Type'] = port.type.cxx_name
+        if port.type
+            portHash['Type'] = port.type.cxx_name
+        else
+            #dynamic ports must not necessarily define a type. E.g. tools/logger does not
+            portHash['Type'] = ""
+        end
+
         dynamicOutputPorts << portHash
     end
     taskHash['dynamicOutputPorts'] = dynamicOutputPorts
