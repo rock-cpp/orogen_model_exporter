@@ -33,6 +33,24 @@ def export_orogen_to_yaml(task)
     end
     taskHash['outputPorts'] = outputPorts
 
+    dynamicInputPorts = Array.new()
+    task.each_dynamic_input_port do |port|
+        portHash = Hash.new()
+        portHash['Name'] = port.name.inspect()
+        portHash['Type'] = port.type.cxx_name
+        dynamicInputPorts << portHash
+    end
+    taskHash['dynamicInputPorts'] = dynamicInputPorts
+
+    dynamicOutputPorts = Array.new()
+    task.each_dynamic_output_port do |port|
+        portHash = Hash.new()
+        portHash['Name'] = port.name.inspect()
+e        portHash['Type'] = port.type.cxx_name
+        dynamicOutputPorts << portHash
+    end
+    taskHash['dynamicOutputPorts'] = dynamicOutputPorts
+
     properties = Array.new()
     task.each_property do |p|
         propHash = Hash.new()
@@ -80,6 +98,6 @@ def export_orogen_to_yaml(task)
     taskHash['eventPorts'] = task.event_ports.keys
     
     doc[moduleName][taskName] = taskHash
-    
+
     modelYML = Psych.dump(doc);
 end
