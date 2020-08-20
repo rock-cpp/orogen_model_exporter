@@ -65,12 +65,12 @@ void models::Task::addOutputPort(const models::Port& port)
 
 void models::Task::addDynamicInputPort(const models::Port& port)
 {
-    addObject(dynamicInputPorts, port, "DynamicInputPort");
+    addObject(dynamicInputPortMap, dynamicInputPorts, port, "DynamicInputPort");
 }
 
 void models::Task::addDynamicOutputPort(const models::Port& port)
 {
-    addObject(dynamicOutputPorts, port, "DynamicOutputPort");
+    addObject(dynamicOutputPortMap, dynamicOutputPorts, port, "DynamicOutputPort");
 }
 
 void models::Task::addProperty(const models::Property& property)
