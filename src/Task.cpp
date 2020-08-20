@@ -63,6 +63,16 @@ void models::Task::addOutputPort(const models::Port& port)
     addObject(outputPortMap, outputPorts, port, "OutputPort");
 }
 
+void models::Task::addDynamicInputPort(const models::Port& port)
+{
+    addObject(dynamicInputPorts, port, "DynamicInputPort");
+}
+
+void models::Task::addDynamicOutputPort(const models::Port& port)
+{
+    addObject(dynamicOutputPorts, port, "DynamicOutputPort");
+}
+
 void models::Task::addProperty(const models::Property& property)
 {
     addObject(propertyMap, properties, property, "Property");
@@ -156,6 +166,16 @@ const std::vector< models::Port >& models::Task::getInputPorts() const
 const std::vector< models::Port >& models::Task::getOutputPorts() const
 {
     return outputPorts;
+}
+
+const std::vector< models::Port >& models::Task::getDynamicInputPorts() const
+{
+    return dynamicInputPorts;
+}
+
+const std::vector< models::Port >& models::Task::getDynamicOutputPorts() const
+{
+    return dynamicOutputPorts;
 }
 
 const std::vector< models::Property >& models::Task::getProperties() const

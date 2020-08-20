@@ -176,6 +176,8 @@ void YAMLImporter::fillTask(Task& task, const YAML::Node& input) const
     
     addPorts<Port>(node["inputPorts"], boost::bind(&Task::addInputPort, &task, _1));
     addPorts<Port>(node["outputPorts"], boost::bind(&Task::addOutputPort, &task, _1));
+    addPorts<Port>(node["dynamicInputPorts"], boost::bind(&Task::addDynamicInputPort, &task, _1));
+    addPorts<Port>(node["dynamicOutputPorts"], boost::bind(&Task::addDynamicOutputPort, &task, _1));
     addProperties(node["properties"], boost::bind(&Task::addProperty, &task, _1));
     
     for(const YAML::Node &op: node["operations"])

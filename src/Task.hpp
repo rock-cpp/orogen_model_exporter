@@ -28,6 +28,8 @@ class Task
 friend class models::YAMLImporter;
     std::vector<Port> inputPorts;
     std::vector<Port> outputPorts;
+    std::vector<Port> dynamicInputPorts;
+    std::vector<Port> dynamicOutputPorts;
     std::vector<Property> properties;
     std::vector<Operation> operations;
     
@@ -52,11 +54,15 @@ public:
     
     void addInputPort(const Port &port);
     void addOutputPort(const Port &port);
+    void addDynamicInputPort(const Port &port);
+    void addDynamicOutputPort(const Port &port);
     void addProperty(const Property &property);
     void addOperation(const Operation &op);
     
     const std::vector<Port> &getInputPorts() const; 
-    const std::vector<Port> &getOutputPorts() const; 
+    const std::vector<Port> &getOutputPorts() const;
+    const std::vector<Port> &getDynamicInputPorts() const; 
+    const std::vector<Port> &getDynamicOutputPorts() const; 
 
     bool hasInputPort(const std::string name) const;
     const Port &getInputPort(const std::string name) const;
