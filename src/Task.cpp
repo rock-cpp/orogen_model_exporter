@@ -53,6 +53,12 @@ void addObject(std::map<std::string, F> &map, std::vector<F> &vec, const F& o, c
     vec.push_back(o);
 }
 
+template <class F>
+void addObject(std::vector<F> &vec, const F& o, const std::string &objectName)
+{
+    vec.push_back(o);
+}
+
 void models::Task::addInputPort(const models::Port& port)
 {
     addObject(inputPortMap, inputPorts, port, "InputPort");
@@ -65,12 +71,12 @@ void models::Task::addOutputPort(const models::Port& port)
 
 void models::Task::addDynamicInputPort(const models::Port& port)
 {
-    addObject(dynamicInputPortMap, dynamicInputPorts, port, "DynamicInputPort");
+    addObject(dynamicInputPorts, port, "DynamicInputPort");
 }
 
 void models::Task::addDynamicOutputPort(const models::Port& port)
 {
-    addObject(dynamicOutputPortMap, dynamicOutputPorts, port, "DynamicOutputPort");
+    addObject(dynamicOutputPorts, port, "DynamicOutputPort");
 }
 
 void models::Task::addProperty(const models::Property& property)

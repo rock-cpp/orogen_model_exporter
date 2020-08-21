@@ -35,8 +35,6 @@ friend class models::YAMLImporter;
     
     std::map<std::string, Port> inputPortMap;
     std::map<std::string, Port> outputPortMap;
-    std::map<std::string, Port> dynamicInputPortMap;
-    std::map<std::string, Port> dynamicOutputPortMap;
     std::map<std::string, Property> propertyMap;
     std::map<std::string, Operation> operationMap;
     
