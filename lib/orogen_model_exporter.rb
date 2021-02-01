@@ -102,7 +102,8 @@ def export_orogen_to_yaml(task)
     transformer = task.find_extension("transformer");
     if(transformer)
         taskHash['Plugins'] = {'transformer' => {'Frames' => transformer.available_frames.to_a,
-                               'Transformations' => transformer.needed_transformations.map{|t| {"From" => t.from, "To" => t.to} } }}
+                               'Transformations' => transformer.needed_transformations.map{|t| {"From" => t.from, "To" => t.to} },
+                               'TransformOutputs' => transformer.transform_outputs.map{|p,t| {"From" => t.from, "To" => t.to, "PortName" => p.name}}}}
     end 
 
     taskHash['defaultActivity'] = task.default_activity
