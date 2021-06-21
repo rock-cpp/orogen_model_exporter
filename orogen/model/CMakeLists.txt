@@ -6,4 +6,4 @@ INSTALL(FILES
    end
    model_files
 %>
-    DESTINATION share/orogen/models/)
+    DESTINATION $ENV{OROGEN_MODEL_PATH})
