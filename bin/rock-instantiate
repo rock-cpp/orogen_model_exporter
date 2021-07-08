@@ -27,6 +27,11 @@ Options:
 		                   "string will be writen to STDOUT") do |of|
 		options[:output_file] = of
 	end
+	opts.on("-c FILEPATH", "--config_file=FILEPATH", "Specify file to "+
+		                   "load configuraiton from. If not given, the configuration "+
+		                   "will be loaded from selected bundle folder") do |f|
+		options[:config_file] = f
+	end
 end
 
 optparse.parse!
@@ -91,7 +96,11 @@ begin
 	           :oro_logfile => '/tmp/rock-instantiate-oro.log' do
 		inst = Orocos.get cname
 		begin
-			Orocos.conf.apply(inst, options[:configs], true)
+			if options[:config_file]
+				Orocos.apply_conf(inst, options[:config_file], options[:configs])
+			else
+				Orocos.conf.apply(inst, options[:configs], true)
+			end
 			inst.configure
 		rescue ArgumentError => err
 			puts "ERROR: Could not configure Task Context with config sections: " +
