@@ -23,8 +23,8 @@ rock_library(modelLib
     DEPS_PKGCONFIG
         lib_config
         yaml-cpp
-    DEPS_PLAIN 
-        Boost_SYSTEM Boost_FILESYSTEM
+    DEPS
+        Boost::system Boost::filesystem
     )
     
 rock_executable(ymlTest Main.cpp
