@@ -14,8 +14,6 @@ class ModelExporterPlugin <  OroGen::Spec::TaskModelExtension
     end
     
     def post_generation_hook(task)
-        moduleName = task.project.name
-        taskName = task.basename
         modelYAML = export_orogen_to_yaml(task)
                 
         template_dir = File.join(File.dirname(__FILE__), "../templates")
@@ -23,7 +21,7 @@ class ModelExporterPlugin <  OroGen::Spec::TaskModelExtension
         cmake = Orocos::Generation.render_template template_dir, 'models', 'CMakeLists.txt', binding
         Orocos::Generation.save_automatic('models', "CMakeLists.txt", cmake)
         
-        Orocos::Generation.save_automatic('models', "#{moduleName}::#{taskName}.yml", modelYAML)
+        Orocos::Generation.save_automatic('models', "#{task.name}.yml", modelYAML)
         @hasTasks = true
     end
     
