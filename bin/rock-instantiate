@@ -1,5 +1,6 @@
 #! /usr/bin/ruby
 
+require 'typelib'
 require 'orogen_model_exporter'
 require 'rock/bundle'
 require 'optparse'
@@ -97,7 +98,7 @@ begin
 		inst = Orocos.get cname
 		begin
 			if options[:config_file]
-				Orocos.apply_conf(inst, options[:config_file], options[:configs])
+				Orocos.apply_conf(inst, options[:config_file], options[:configs], true)
 			else
 				Orocos.conf.apply(inst, options[:configs], true)
 			end
