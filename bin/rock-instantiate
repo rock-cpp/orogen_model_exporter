@@ -92,17 +92,17 @@ Bundles.initialize
 
 begin
 	cname = options[:task_model_name]+"__"+options[:configs].join
-	Orocos.run options[:task_model_name] => cname, 
+	Orocos.run({options[:task_model_name] => cname}, 
 	           :output => '/tmp/rock-instantiate.log',
-	           :oro_logfile => '/tmp/rock-instantiate-oro.log' do
-		inst = Orocos.get cname
+	           :oro_logfile => '/tmp/rock-instantiate-oro.log') do
+		inst = Orocos.get(cname)
 		begin
 			if options[:config_file]
 				Orocos.apply_conf(inst, options[:config_file], options[:configs], true)
 			else
 				Orocos.conf.apply(inst, options[:configs], true)
 			end
-			inst.configure
+			inst.configure()
 		rescue ArgumentError => err
 			puts "ERROR: Could not configure Task Context with config sections: " +
 			options[:configs].to_s() + ". The following Error was reported: \n"
