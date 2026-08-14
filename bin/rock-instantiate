@@ -1,6 +1,5 @@
 #! /usr/bin/ruby
 
-require 'typelib'
 require 'orogen_model_exporter'
 require 'rock/bundle'
 require 'optparse'
